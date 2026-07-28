@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Randomization inspector</title>
+<style>
+  body { font-family: -apple-system, system-ui, sans-serif; margin: 24px; color: #1a1a1a; }
+  h1 { font-size: 20px; } h2 { font-size: 16px; margin-top: 28px; }
+  .controls { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-bottom: 16px; }
+  input[type=number] { width: 80px; padding: 4px 6px; }
+  button { padding: 5px 12px; cursor: pointer; }
+  table { border-collapse: collapse; margin: 8px 0 20px; font-size: 13px; }
+  th, td { border: 1px solid #ccc; padding: 3px 8px; text-align: left; }
+  th { background: #f2f2f2; }
+  .obj { background: #fff6e0; }
+  .lure { background: #ffe0e0; }
+  .grp { display: inline-block; padding: 2px 10px; border-radius: 4px; font-weight: 600; }
+  .schema { background: #d6ebff; } .noschema { background: #ffe6d6; }
+  .pass { color: #0a7a0a; font-weight: 600; } .fail { color: #c00; font-weight: 700; }
+  .muted { color: #777; } .mono { font-family: ui-monospace, Menlo, monospace; font-size: 12px; }
+  .card { border: 1px solid #ddd; border-radius: 6px; padding: 12px 16px; margin: 12px 0; }
+  #checks li { margin: 2px 0; }
+</style>
+</head>
+<body>
+<h1>Randomization inspector <span class="muted mono">(JS build)</span></h1>
+<p class="muted">Validates the per-subject state, Block 1 correct answers, and Block 2 role
+assignment, and cross-checks that this JS build reproduces the PsychoPy build exactly.
+Serve over a local HTTP server (the CSVs are fetched):
+<span class="mono">python3 -m http.server</span> in this folder, then open
+<span class="mono">/test_randomization.html</span>.</p>
+
+<div class="controls">
+  <label>Subject index: <input type="number" id="subj" value="0" min="0"></label>
+  <button id="go">Inspect</button>
+  <button id="sweep">Counterbalance sweep (0–11)</button>
+  <span id="status" class="muted"></span>
+</div>
+
+<div id="checks"></div>
+<div id="out"></div>
+<div id="sweepOut"></div>
+
+<script src="js/config.js"></script>
+<script src="js/stimuli/parseStimuli.js"></script>
+<script src="js/randomization.js"></script>
+<script>
+let STIM = null;
+
+async function loadStimuli() {
+  if (STIM) return STIM;
+  const [b1, b2] = await Promise.all([
+    fetch(CONFIG.paths.block1Csv).then(r => r.text()),
+    fetch(CONFIG.paths.block2Csv).then(r => r.text())
+  ]);
+  // Always inspect the FULL 8-routine experiment, ignoring CONFIG.demoRoutines —
+  // the parity reference values assume the full set.
+  STIM = buildStimuli(b1, b2, null);
+  return STIM;
+}
+
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])); }
+
+// ---- reference values produced by psychopy_exp (the Python build) ----------
+// If any of these fail, the two builds have drifted apart.
+// conditions are in canonical routine order:
+// restaurant, movie, clinic, airport, metro, hotel, laundromat, gym
+const PY_REF = {
+  0: {
+    conditions: ['ordered','ordered','ordered','ordered','scrambled','scrambled','scrambled','scrambled'],
+    instance_order: ['movie','restaurant','clinic','hotel','airport','laundromat','gym','metro'],
+    b1_first5: [['restaurant',2],['hotel',2],['movie',3],['metro',2],['gym',6]],
+    b2_first5: [['hotel','suitcase','lure'],['metro','umbrella','target'],
+                ['airport','luggage','lure'],['airport','neck pillow','lure'],
+                ['hotel',"passenger's clothing",'target']],
+    order_first: { routine: 'clinic', condition: 'ordered',
+                   steps: [2,4,3,5,6], true_pos: [1,3,2,4,5] }
+  },
+  3: {
+    conditions: ['scrambled','scrambled','scrambled','ordered','ordered','ordered','ordered','scrambled'],
+    instance_order: ['clinic','laundromat','gym','movie','airport','restaurant','hotel','metro'],
+    b1_first5: [['clinic',1],['laundromat',1],['laundromat',3],['restaurant',5],['metro',6]],
+    b2_first5: [['laundromat','hoodie/shirt','lure'],['laundromat','detergent','target'],
+                ['hotel','suitcase','target'],['gym','water bottle','lure'],
+                ['gym','gym bag','target']],
+    order_first: { routine: 'gym', condition: 'scrambled',
+                   steps: [1,3,6,4,2], true_pos: [2,5,1,4,3] }
+  }
+};
+
+// ---- automatic invariant checks -------------------------------------------
+function runChecks(state, stimuli) {
+  const results = [];
+  const ok = (cond, msg) => results.push({ pass: !!cond, msg });
+  const design = CONFIG.block2Design || 'one';
+
+  const b1 = buildBlock1Trials(state, stimuli);
+  const b2raw = buildBlock2Trials(state, stimuli);
+  ok(b1.length === 48, `Block 1 has 48 trials (got ${b1.length})`);
+  ok(b2raw.length === 48, `24 objects x 2 versions exist (got ${b2raw.length})`);
+
+  let allShown5 = true, allObjPresent = true, omittedNonObj = true;
+  for (const routine of stimuli.routines) {
+    const st = state.routines[routine.routine_id];
+    if (st.shown_order.length !== 5) allShown5 = false;
+    const objSteps = routine.steps.filter(s => s.is_object_step).map(s => s.step_num);
+    const shownSteps = st.shown_order.map(s => s.step_num);
+    if (!objSteps.every(s => shownSteps.includes(s))) allObjPresent = false;
+    if (routine.steps.find(s => s.step_num === st.omitted_step).is_object_step) omittedNonObj = false;
+  }
+  ok(allShown5, 'Every routine shows exactly 5 of 6 steps');
+  ok(allObjPresent, 'All 3 object steps are always among the shown steps');
+  ok(omittedNonObj, 'The omitted step is always a non-object step');
+
+  let yes = 0, no = 0;
+  for (const t of b1) (t.correct_answer === 'yes' ? yes++ : no++);
+  ok(yes === 40 && no === 8, `Block 1: 40 YES + 8 NO (omitted lure) — got ${yes}/${no}`);
+
+  // ordered blocks
+  const b1o = orderedBlock1Trials(state, stimuli);
+  const b2o = orderedBlock2Trials(state, stimuli);
+  const expB2 = design === 'one' ? 24 : 48;
+  ok(b1o.length === 48 && b2o.length === expB2,
+     `ordered block sizes (b1=48, b2=${expB2} for '${design}' design)`);
+  ok(JSON.stringify(orderedBlock1Trials(state, stimuli)) === JSON.stringify(b1o) &&
+     JSON.stringify(orderedBlock2Trials(state, stimuli)) === JSON.stringify(b2o),
+     'within-block trial order is reproducible per subject');
+
+  if (design === 'one') {
+    const keys = b2o.map(t => t.routine_id + '|' + t.object_label);
+    const nTarget = b2o.filter(t => t.trial_variant === 'target').length;
+    ok(new Set(keys).size === 24 && b2o.length === 24,
+       'one-design: 24 trials, each object exactly once');
+    ok(nTarget === 12, `one-design: 12 target + 12 lure per subject (got ${nTarget} target)`);
+    let roleOk = true;
+    for (const t of b2o) {
+      const seen = state.routines[t.routine_id].variant_seen[t.object_label];
+      const wantYes = t.trial_variant === 'target';
+      if ((t.variant_shown === seen) !== wantYes) roleOk = false;
+      if (t.correct_answer !== (wantYes ? 'yes' : 'no')) roleOk = false;
+    }
+    ok(roleOk, 'one-design: target=seen variant->yes, lure=unseen->no');
+  } else {
+    ok(minSameObjectLag(b2o) >= CONFIG.block2MinSameObjectLag,
+       `both-design: same-object lag >= ${CONFIG.block2MinSameObjectLag} (got ${minSameObjectLag(b2o)})`);
+  }
+
+  // instance order
+  const allRids = stimuli.routines.map(r => r.routine_id).sort().join(',');
+  ok(state.instance_order.slice().sort().join(',') === allRids && state.instance_order.length === 8,
+     'instance_order is a permutation of all 8 routines');
+
+  // determinism
+  ok(JSON.stringify(initSubject(state.subjIndex, state.subjIndex, stimuli)) === JSON.stringify(state),
+     'Re-running initSubject reproduces identical state (seeded, deterministic)');
+
+  return results;
+}
+
+// ---- cross-build parity against the Python reference ----------------------
+function runParityChecks(stimuli) {
+  const results = [];
+  const ok = (cond, msg) => results.push({ pass: !!cond, msg });
+  const eq = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+
+  for (const idx of Object.keys(PY_REF).map(Number)) {
+    const ref = PY_REF[idx];
+    const st = initSubject(idx, idx, stimuli);
+    const b1 = orderedBlock1Trials(st, stimuli).slice(0, 5).map(t => [t.routine_id, t.step_num]);
+    const b2 = orderedBlock2Trials(st, stimuli).slice(0, 5)
+                 .map(t => [t.routine_id, t.object_label, t.trial_variant]);
+    const conds = stimuli.routines.map(r => st.routines[r.routine_id].condition);
+    ok(eq(conds, ref.conditions), `subj ${idx}: per-routine conditions match PsychoPy build`);
+    ok(eq(st.instance_order, ref.instance_order), `subj ${idx}: instance_order matches PsychoPy build`);
+    ok(eq(b1, ref.b1_first5), `subj ${idx}: Block 1 order matches PsychoPy build`);
+    ok(eq(b2, ref.b2_first5), `subj ${idx}: Block 2 order + roles match PsychoPy build`);
+    const ot = orderedOrderTestTrials(st, stimuli)[0];
+    ok(ot.routine_id === ref.order_first.routine &&
+       ot.condition === ref.order_first.condition &&
+       eq(ot.items.map(x => x.step_num), ref.order_first.steps) &&
+       eq(ot.items.map(x => x.true_pos), ref.order_first.true_pos),
+       `subj ${idx}: order-test layout + positions match PsychoPy build`);
+  }
+  return results;
+}
+
+function renderChecks(results, title) {
+  const allPass = results.every(r => r.pass);
+  return `<div class="card"><b>${esc(title)}: </b>
+    <span class="${allPass ? 'pass' : 'fail'}">${allPass ? 'ALL PASS' : 'FAILURES PRESENT'}</span>
+    <ul id="checks">${results.map(r =>
+      `<li><span class="${r.pass ? 'pass' : 'fail'}">${r.pass ? '✓' : '✗'}</span> ${esc(r.msg)}</li>`
+    ).join('')}</ul></div>`;
+}
+
+function renderSubject(state, stimuli) {
+  const nOrd = Object.values(state.routines).filter(r => r.condition === 'ordered').length;
+  let html = `<div class="card">
+    <b>subjectId</b> <span class="mono">${esc(state.subjectId)}</span> &nbsp;
+    <b>index</b> ${state.subjIndex} &nbsp;
+    <b>design</b> <span class="grp schema">${esc(state.design)}</span> &nbsp;
+    <b>ordered/scrambled</b> ${nOrd}/${8 - nOrd} &nbsp;
+    <b>coverTask</b> ${esc(state.coverTask)} &nbsp;
+    <b>block2Design</b> ${esc(CONFIG.block2Design)}
+    <div class="muted" style="margin-top:6px">encoding instance order:
+      <span class="mono">${state.instance_order.map(esc).join(' → ')}</span></div></div>`;
+
+  for (const rid of state.instance_order) {
+    const routine = stimuli.routines.find(r => r.routine_id === rid);
+    const st = state.routines[rid];
+    const omittedStep = routine.steps.find(s => s.step_num === st.omitted_step);
+    const condClass = st.condition === 'ordered' ? 'schema' : 'noschema';
+    html += `<h2>${esc(routine.routine_label)} <span class="grp ${condClass}">${esc(st.condition)}</span>
+      <span class="muted mono">(routine_num ${routine.routine_num})</span></h2>`;
+    html += `<div class="muted">Omitted (Block 1 lure → correct = NO): step ${st.omitted_step} —
+      “${esc(omittedStep.question_text)}”</div>`;
+    html += `<table><tr><th>serial</th><th>step</th><th>object?</th><th>object</th>
+      <th>variant</th><th>desc</th><th>image_file</th></tr>`;
+    st.shown_order.forEach(s => {
+      html += `<tr class="${s.is_object_step ? 'obj' : ''}">
+        <td>${s.serial_pos}</td><td>${s.step_num}</td>
+        <td>${s.is_object_step ? '●' : ''}</td><td>${esc(s.object_label || '')}</td>
+        <td>${s.is_object_step ? s.variant_shown : ''}</td><td>${esc(s.variant_desc || '')}</td>
+        <td class="mono">${esc(s.image_file)}</td></tr>`;
+    });
+    html += `</table>`;
+  }
+
+  const b2 = orderedBlock2Trials(state, stimuli);
+  html += `<h2>Block 2 trials (${b2.length}) — presentation order</h2>`;
+  html += `<table><tr><th>#</th><th>routine</th><th>object</th><th>trial</th><th>variant</th>
+    <th>desc</th><th>correct</th><th>image_file</th></tr>`;
+  b2.forEach((t, i) => {
+    html += `<tr class="${t.trial_variant === 'lure' ? 'lure' : ''}">
+      <td>${i + 1}</td><td>${esc(t.routine_id)}</td><td>${esc(t.object_label)}</td>
+      <td>${t.trial_variant}</td><td>${t.variant_shown}</td><td>${esc(t.variant_desc)}</td>
+      <td>${t.correct_answer}</td><td class="mono">${esc(t.image_file)}</td></tr>`;
+  });
+  return html + `</table>`;
+}
+
+function renderSweep(stimuli, n) {
+  const rids = stimuli.routines.map(r => r.routine_id);
+  let html = `<h2>Counterbalance sweep (subject index 0–${n - 1})</h2>
+    <p class="muted">Each cell = that routine's condition (o=ordered / s=scrambled) for that
+    subject. Each row has 4 ordered + 4 scrambled; each column (routine) is ordered for
+    ~half the subjects. #target stays 12 for everyone.</p>
+    <table><tr><th>idx</th>${rids.map(r => `<th>${esc(r).slice(0, 4)}</th>`).join('')}
+    <th>#ord</th><th>#target</th></tr>`;
+  for (let i = 0; i < n; i++) {
+    const st = initSubject(i, i, stimuli);
+    const nT = orderedBlock2Trials(st, stimuli).filter(t => t.trial_variant === 'target').length;
+    const nO = rids.filter(r => st.routines[r].condition === 'ordered').length;
+    html += `<tr><td>${i}</td>${
+      rids.map(r => `<td>${st.routines[r].condition === 'ordered' ? 'o' : 's'}</td>`).join('')}` +
+      `<td>${nO}</td><td>${nT}</td></tr>`;
+  }
+  return html + `</table>`;
+}
+
+document.getElementById('go').onclick = async () => {
+  const status = document.getElementById('status');
+  status.textContent = 'loading…';
+  try {
+    const stimuli = await loadStimuli();
+    const idx = parseInt(document.getElementById('subj').value, 10) || 0;
+    const state = initSubject(idx, idx, stimuli);
+    document.getElementById('checks').innerHTML =
+      renderChecks(runChecks(state, stimuli), 'Invariant checks') +
+      renderChecks(runParityChecks(stimuli), 'Parity with the PsychoPy build');
+    document.getElementById('out').innerHTML = renderSubject(state, stimuli);
+    document.getElementById('sweepOut').innerHTML = '';
+    status.textContent = '';
+  } catch (e) { status.innerHTML = `<span class="fail">${esc(e.message)}</span>`; throw e; }
+};
+
+document.getElementById('sweep').onclick = async () => {
+  const stimuli = await loadStimuli();
+  document.getElementById('sweepOut').innerHTML = renderSweep(stimuli, 12);
+};
+
+document.getElementById('go').click();
+</script>
+</body>
+</html>

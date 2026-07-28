@@ -1,0 +1,12 @@
+# Original full-resolution PNGs (129 MB) — only the compressed schema_stimuli_web/
+# JPEGs are needed to serve the online build. Keep the PNGs backed up separately;
+# the PsychoPy build reads them from your local copy.
+schema_stimuli/
+
+# Collected data
+data/
+
+# Python / macOS cruft
+__pycache__/
+*.pyc
+.DS_Store

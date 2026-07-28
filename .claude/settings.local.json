@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(which node *)",
+      "Bash(python3 -c \"import psychopy; print\\('psychopy', psychopy.__version__\\)\")",
+      "Bash(python3 -m pip show psychopy)",
+      "Bash(python3 psychopy_exp/verify_logic.py)",
+      "Bash(python3 -m py_compile psychopy_exp/config.py psychopy_exp/experiment_logic.py psychopy_exp/verify_logic.py psychopy_exp/experiment.py)",
+      "Bash(python3 -m py_compile psychopy_exp/experiment.py)",
+      "Bash(python3 -m py_compile psychopy_exp/config.py psychopy_exp/experiment.py)",
+      "Bash(python3 -m py_compile psychopy_exp/experiment.py psychopy_exp/experiment_logic.py)",
+      "Bash(python3 -m py_compile psychopy_exp/config.py)",
+      "Bash(python3 -c ' *)",
+      "Bash(python3 -m py_compile psychopy_exp/*.py)",
+      "Bash(python3 -)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:8731/test_randomization.html)",
+      "Read(//Users/chuyue/.ssh/**)",
+      "Bash(security find-generic-password *)",
+      "Bash(ls -la ~/.claude/ 2>/dev/null | head -20; echo \"--- creds file? ---\"; ls -la ~/.claude/.credentials.json 2>/dev/null || echo \"no .credentials.json\"; echo \"--- keychain ---\"; security find-generic-password -s \"Claude Code-credentials\" 2>&1 | head -3)",
+      "Bash(grep -nE 'title=|show_message\\\\\\(|\"[A-Z][^\"]{20,}\"' psychopy_exp/experiment.py)"
+    ]
+  }
+}

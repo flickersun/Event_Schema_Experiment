@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Neutral title: participants must not learn this is a memory study (encoding is
+     incidental, the test is a surprise). Same rule as the PsychoPy dialog. -->
+<title>Everyday Experiences</title>
+
+<script src="https://unpkg.com/jspsych@7.3.4"></script>
+<script src="https://unpkg.com/@jspsych/plugin-html-keyboard-response@1.1.3"></script>
+<script src="https://unpkg.com/@jspsych/plugin-image-keyboard-response@1.1.3"></script>
+<script src="https://unpkg.com/@jspsych/plugin-preload@1.1.3"></script>
+<link rel="stylesheet" href="https://unpkg.com/jspsych@7.3.4/css/jspsych.css">
+
+<style>
+  body { background:#fff; }
+  .jspsych-content { max-width: 1100px; }
+  .instr { text-align:left; max-width:760px; margin:0 auto; font-size:19px; line-height:1.6; }
+  .instr h2 { font-size:24px; margin-bottom:.6em; }
+  .quote { font-weight:600; text-align:center; margin:1.1em 0; }
+  .hint { color:#888; font-size:15px; margin-top:1.6em; }
+  .rate .cue { color:#666; font-size:17px; margin-bottom:.2em; }
+  .rate .q { font-size:22px; margin:.2em 0 1.2em; }
+  .rate .probe { max-height:44vh; margin-bottom:.8em; }
+  .scale { font-size:30px; letter-spacing:.9em; margin:.3em 0 .4em; }
+  .anchors { display:flex; justify-content:space-between; max-width:560px;
+             margin:0 auto; color:#444; font-size:15px; }
+  /* click-to-order (Block 3) */
+  .co-wrap { max-width:1080px; width:100%; margin:0 auto; box-sizing:border-box; padding:0 6px; }
+  .co-prompt { font-size:21px; margin-bottom:1em; }
+  .co-row { display:flex; gap:10px; justify-content:center; align-items:center; width:100%; }
+  /* min-width:0 is required — flex items default to min-width:auto, which stops the
+     images shrinking below their intrinsic size and overflows the row on narrow
+     screens (participants are on unknown window sizes). */
+  .co-item { position:relative; cursor:pointer; flex:1 1 0; min-width:0; max-width:210px; }
+  .co-item img { width:100%; display:block; border:2px solid #ddd; border-radius:6px;
+                 transition:opacity .12s, border-color .12s; }
+  .co-item:hover img { border-color:#4a90d9; }
+  .co-badge { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+              width:46px; height:46px; border-radius:50%; background:#1a1a1a; color:#fff;
+              font-size:24px; font-weight:700; display:none; align-items:center;
+              justify-content:center; border:2px solid #fff; }
+  .co-hint { color:#888; font-size:15px; margin:1em 0; }
+  .co-btn { font-size:17px; padding:9px 26px; cursor:pointer; }
+  .co-btn:disabled { opacity:.4; cursor:not-allowed; }
+</style>
+</head>
+<body></body>
+
+<script src="js/config.js"></script>
+<script src="js/stimuli/parseStimuli.js"></script>
+<script src="js/randomization.js"></script>
+<script src="js/plugin-click-order.js"></script>
+<script src="js/timeline.js"></script>
+<script>
+// ===========================================================================
+// Entry point.
+//
+// Two identifiers, deliberately separate (see EXPERIMENT_MODEL_MAPPING / README):
+//   subjIndex  — drives every COUNTERBALANCE. Must be a sequential integer, so it
+//                comes from DataPipe's server-side condition assignment. The whole
+//                design closes after lcm(8 routines, 3 omission, 4 role) = 24, so
+//                24 conditions is a complete cycle.
+//   subjectId  — seeds the PRNG (scramble order, variants, trial order). Uses the
+//                participant ID from the Qualtrics/SONA redirect so different
+//                participants get different shuffles even at the same subjIndex.
+// ===========================================================================
+const DATAPIPE_ID = "REPLACE_WITH_YOUR_DATAPIPE_EXPERIMENT_ID";
+const N_CONDITIONS = 24;
+
+const params = new URLSearchParams(window.location.search);
+const participantId = params.get("pid") || params.get("PROLIFIC_PID") ||
+                      params.get("id") || ("anon-" + Math.random().toString(36).slice(2, 10));
+// Where to send participants when they finish (Qualtrics 2nd-stage / SONA credit URL).
+const COMPLETION_URL = params.get("next") || "";
+
+async function getSubjIndex() {
+  try {
+    const r = await fetch("https://pipe.jspsych.org/api/condition/", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ experimentID: DATAPIPE_ID }),
+    });
+    const c = await r.json();
+    if (typeof c.condition === "number") return c.condition;
+  } catch (e) { console.warn("DataPipe condition assignment unavailable:", e); }
+  // Fallback keeps piloting possible offline — NOT counterbalanced, flagged in data.
+  return Math.floor(Math.random() * N_CONDITIONS);
+}
+
+(async function main() {
+  const [b1, b2] = await Promise.all([
+    fetch(CONFIG.paths.block1Csv).then((r) => r.text()),
+    fetch(CONFIG.paths.block2Csv).then((r) => r.text()),
+  ]);
+  const stimuli = buildStimuli(b1, b2);
+
+  const subjIndex = await getSubjIndex();
+  const state = initSubject(participantId, subjIndex, stimuli);
+
+  const jsPsych = initJsPsych({
+    on_finish: () => {
+      if (COMPLETION_URL) window.location.href = COMPLETION_URL;
+    },
+  });
+  jsPsych.data.addProperties({
+    subject_id: participantId, subj_index: subjIndex,
+    design: state.design, cover_task: state.coverTask,
+  });
+
+  const timeline = buildTimeline(state, stimuli);
+
+  timeline.push({
+    type: jsPsychHtmlKeyboardResponse,
+    stimulus: `<div class="instr"><h2>Saving…</h2><p>Please do not close this window.</p></div>`,
+    choices: "NO_KEYS",
+    on_start: () => {
+      fetch("https://pipe.jspsych.org/api/data/", {
+        method: "POST", headers: { "Content-Type": "application/json", Accept: "*/*" },
+        body: JSON.stringify({
+          experimentID: DATAPIPE_ID,
+          filename: `sub-${subjIndex}_${participantId}_${Date.now()}.csv`,
+          data: jsPsych.data.get().csv(),
+        }),
+      }).finally(() => jsPsych.finishTrial());
+    },
+  });
+  timeline.push({
+    type: jsPsychHtmlKeyboardResponse,
+    stimulus: `<div class="instr"><h2>That's the end. Thank you!</h2>
+               <p>${COMPLETION_URL ? "Redirecting…" : "You may now close this window."}</p></div>`,
+    choices: COMPLETION_URL ? "NO_KEYS" : [" "],
+    trial_duration: COMPLETION_URL ? 1500 : null,
+  });
+
+  jsPsych.run(timeline);
+})();
+</script>
+</html>
