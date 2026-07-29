@@ -80,6 +80,10 @@ const participantId = params.get("pid") || params.get("PROLIFIC_PID") ||
 // Where to send participants when they finish (Qualtrics 2nd-stage / SONA credit URL).
 const COMPLETION_URL = params.get("next") || "";
 
+// Returns { index, source }. `source` MUST be logged: the fallback below keeps a
+// participant from getting stuck when DataPipe is unreachable, but it is NOT
+// counterbalanced. Without the flag that failure is silent — data still saves, the
+// balancing is quietly broken, and nothing in the file reveals it.
 async function getSubjIndex() {
   try {
     const r = await fetch("https://pipe.jspsych.org/api/condition/", {
@@ -87,10 +91,10 @@ async function getSubjIndex() {
       body: JSON.stringify({ experimentID: DATAPIPE_ID }),
     });
     const c = await r.json();
-    if (typeof c.condition === "number") return c.condition;
+    if (typeof c.condition === "number") return { index: c.condition, source: "datapipe" };
+    console.warn("DataPipe returned no condition:", c);
   } catch (e) { console.warn("DataPipe condition assignment unavailable:", e); }
-  // Fallback keeps piloting possible offline — NOT counterbalanced, flagged in data.
-  return Math.floor(Math.random() * N_CONDITIONS);
+  return { index: Math.floor(Math.random() * N_CONDITIONS), source: "random_fallback" };
 }
 
 (async function main() {
@@ -100,7 +104,7 @@ async function getSubjIndex() {
   ]);
   const stimuli = buildStimuli(b1, b2);
 
-  const subjIndex = await getSubjIndex();
+  const { index: subjIndex, source: subjIndexSource } = await getSubjIndex();
   const state = initSubject(participantId, subjIndex, stimuli);
 
   const jsPsych = initJsPsych({
@@ -110,6 +114,10 @@ async function getSubjIndex() {
   });
   jsPsych.data.addProperties({
     subject_id: participantId, subj_index: subjIndex,
+    // "datapipe" = properly counterbalanced. "random_fallback" = DataPipe was
+    // unreachable; EXCLUDE these participants from any counterbalance-dependent
+    // analysis, or at least check the balance by hand.
+    subj_index_source: subjIndexSource,
     design: state.design, cover_task: state.coverTask,
   });
 
