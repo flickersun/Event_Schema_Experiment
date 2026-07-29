@@ -70,6 +70,19 @@ CONFIG = {
                             "look similar."),
             "pleasantness": "Simply rate how pleasant you find each picture.",
         },
+
+        # Attention-focusing note on the encoding instruction screen. It must raise
+        # engagement WITHOUT hinting at a memory test — encoding stays incidental and
+        # the test stays a surprise (spec §1/§4). So it works by making the demands of
+        # the cover task explicit ("you have to look to rate accurately") rather than
+        # by asking anyone to remember anything.
+        "focus_note": (
+            "Please give this your full attention: close other tabs and silence "
+            "your phone.\n\n"
+            "Rating accurately means actually looking at what happens in each "
+            "picture, so take in the whole scene while it is on screen. Each "
+            "picture stays up for a few seconds and moves on by itself."
+        ),
     },
 
     # --- Scene presentation at encoding -------------------------------------
@@ -80,7 +93,14 @@ CONFIG = {
     # 'self_paced' : subject advances; locked for min_ms, auto-advances at max_ms.
     "scene": {
         "mode": "fixed",
-        "fixed_ms": 10000,
+        # 6 s: long enough to take in a flat illustration, short enough that the
+        # tail of the trial is not spent disengaged. Forced passive viewing with no
+        # response invites mind-wandering, and seconds spent wandering are noise,
+        # not encoding — "equated exposure" would then be equated display time, not
+        # equated attention. Calibrate against the 60-85% hit-rate window (spec §8),
+        # using cover_rt_ms and a memory-by-global_scene_pos trend to tell "too
+        # short" apart from "disengaged" — they need opposite fixes.
+        "fixed_ms": 6000,
         "min_ms": 2000,
         "max_ms": 10000,
     },

@@ -298,11 +298,12 @@ def run_encoding():
     hint = CONFIG["cover_rating"]["instruction_hint"][cover]
     r_max = CONFIG["cover_rating"]["max"]  # r_min assumed 1
 
+    focus = CONFIG["cover_rating"]["focus_note"]
     show_message(
         "Welcome.\n\nYou will watch a series of pictures showing a person going through "
         "everyday experiences.\n\n"
         "After each picture you will give a quick rating:\n"
-        '"%s"\n\n%s\n\nPress SPACE to begin.' % (prompt, hint))
+        '"%s"\n\n%s\n\n%s\n\nPress SPACE to begin.' % (prompt, hint, focus))
     scene_cfg = CONFIG["scene"]
     use_sep = CONFIG["use_instance_separator"]
     sep = CONFIG["instance_separator"]

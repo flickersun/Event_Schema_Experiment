@@ -45,7 +45,8 @@ function buildEncoding(state, stimuli) {
        everyday experiences.</p>
     <p>After each picture you will give a quick rating:</p>
     <p class="quote">"${cr.prompts[cover]}"</p>
-    <p>${cr.instructionHint[cover]}</p>`));
+    <p>${cr.instructionHint[cover]}</p>
+    <p class="focus">${cr.focusNote}</p>`));
 
   // flatten to the presentation stream
   const stream = [];

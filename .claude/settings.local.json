@@ -17,7 +17,18 @@
       "Read(//Users/chuyue/.ssh/**)",
       "Bash(security find-generic-password *)",
       "Bash(ls -la ~/.claude/ 2>/dev/null | head -20; echo \"--- creds file? ---\"; ls -la ~/.claude/.credentials.json 2>/dev/null || echo \"no .credentials.json\"; echo \"--- keychain ---\"; security find-generic-password -s \"Claude Code-credentials\" 2>&1 | head -3)",
-      "Bash(grep -nE 'title=|show_message\\\\\\(|\"[A-Z][^\"]{20,}\"' psychopy_exp/experiment.py)"
+      "Bash(grep -nE 'title=|show_message\\\\\\(|\"[A-Z][^\"]{20,}\"' psychopy_exp/experiment.py)",
+      "Bash(git ls-remote *)",
+      "Bash(curl -s -o /dev/null -w \"  github.com 仓库页: %{http_code}\\\\n\" https://github.com/flickersun/Event_Schema_Experiment)",
+      "Bash(curl -s -o /dev/null -w \"  Pages 站点: %{http_code}\\\\n\" https://flickersun.github.io/Event_Schema_Experiment/)",
+      "Bash(curl -s -X POST https://pipe.jspsych.org/api/condition/ -H \"Content-Type: application/json\" -d '{\"experimentID\":\"j6BA3yHMjJzb\"}' -w \"\\\\nHTTP %{http_code}\\\\n\")",
+      "Bash(curl -s -X POST https://pipe.jspsych.org/api/condition/ -H \"Content-Type: application/json\" -d '{\"experimentID\":\"j6BA3yHMjJzb\"}')",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git push *)",
+      "Bash(curl -s https://flickersun.github.io/Event_Schema_Experiment/index.html)",
+      "Bash(curl -s -X POST https://pipe.jspsych.org/api/data/ -H \"Content-Type: application/json\" -H \"Accept: */*\" -d '{\"experimentID\":\"j6BA3yHMjJzb\",\"filename\":\"PIPELINE-TEST_delete-me.csv\",\"data\":\"trial_type,phase,note\\\\nclick-order,order,pipeline test - safe to delete\\\\n\"}' -w \"\\\\nHTTP %{http_code}\\\\n\")",
+      "Bash(curl -s https://flickersun.github.io/Event_Schema_Experiment/js/config.js)"
     ]
   }
 }
