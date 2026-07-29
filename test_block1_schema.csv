@@ -21,7 +21,7 @@ schema,airport,airport departure,1,1,0,In the airport departure experience...,wa
 schema,airport,airport departure,2,0,0,In the airport departure experience...,was there a step where the person went through security?,confidence_1to6,1 = definitely NO ... 6 = definitely YES
 schema,airport,airport departure,3,1,0,In the airport departure experience...,was there a step where the person waited at the gate?,confidence_1to6,1 = definitely NO ... 6 = definitely YES
 schema,airport,airport departure,4,0,1,In the airport departure experience...,was there a step where the person's boarding pass was scanned?,confidence_1to6,1 = definitely NO ... 6 = definitely YES
-schema,airport,airport departure,5,0,0,In the airport departure experience...,was there a step where the person boarded the plane?,confidence_1to6,1 = definitely NO ... 6 = definitely YES
+schema,airport,airport departure,5,0,0,In the airport departure experience...,was there a step where the person reached the aircraft door?,confidence_1to6,1 = definitely NO ... 6 = definitely YES
 schema,airport,airport departure,6,1,0,In the airport departure experience...,was there a step where the person buckled their seatbelt?,confidence_1to6,1 = definitely NO ... 6 = definitely YES
 schema,metro,metro commute,1,1,0,In the metro commute experience...,was there a step where the person entered the station from the street?,confidence_1to6,1 = definitely NO ... 6 = definitely YES
 schema,metro,metro commute,2,0,0,In the metro commute experience...,was there a step where the person bought a ticket at the machine?,confidence_1to6,1 = definitely NO ... 6 = definitely YES
@@ -42,8 +42,8 @@ schema,laundromat,laundromat trip,4,0,0,In the laundromat trip experience...,was
 schema,laundromat,laundromat trip,5,1,0,In the laundromat trip experience...,was there a step where the person folded laundry?,confidence_1to6,1 = definitely NO ... 6 = definitely YES
 schema,laundromat,laundromat trip,6,0,1,In the laundromat trip experience...,was there a step where the person hung clothes up?,confidence_1to6,1 = definitely NO ... 6 = definitely YES
 schema,gym,gym workout,1,0,0,In the gym workout experience...,was there a step where the person scanned in at the front desk?,confidence_1to6,1 = definitely NO ... 6 = definitely YES
-schema,gym,gym workout,2,1,0,In the gym workout experience...,was there a step where the person was in the locker room?,confidence_1to6,1 = definitely NO ... 6 = definitely YES
-schema,gym,gym workout,3,0,1,In the gym workout experience...,was there a step where the person stretched?,confidence_1to6,1 = definitely NO ... 6 = definitely YES
+schema,gym,gym workout,2,1,0,In the gym workout experience...,was there a step where the person opened their locker in the changing room?,confidence_1to6,1 = definitely NO ... 6 = definitely YES
+schema,gym,gym workout,3,0,1,In the gym workout experience...,was there a step where the person stretched on a mat?,confidence_1to6,1 = definitely NO ... 6 = definitely YES
 schema,gym,gym workout,4,1,0,In the gym workout experience...,was there a step where the person ran on the treadmill?,confidence_1to6,1 = definitely NO ... 6 = definitely YES
 schema,gym,gym workout,5,0,0,In the gym workout experience...,was there a step where the person lifted weights?,confidence_1to6,1 = definitely NO ... 6 = definitely YES
 schema,gym,gym workout,6,1,0,In the gym workout experience...,was there a step where the person left the gym?,confidence_1to6,1 = definitely NO ... 6 = definitely YES
