@@ -60,8 +60,14 @@ const CONFIG = {
     // Wording is kept deliberately plain — many participants are undergraduates and
     // non-native English speakers, so avoid formal or idiomatic phrasing.
     instructionHint: {
+      // The clause about other people removes a real ambiguity a pilot participant
+      // hit: strangers appear in one scene (the elevator passenger, the neighbouring
+      // viewer) and are gone in the next. It mentions ONLY people — do NOT generalise
+      // it to "ignore the details of the scene", which would discourage encoding the
+      // objects that are Block 2's dependent variable.
       consistency: 'Decide whether each picture makes sense as the NEXT STEP after ' +
-                   'the one before it — not whether the two pictures look alike.',
+                   'the one before it — not whether the two pictures look alike. ' +
+                   'Other people may appear or leave between pictures; that is normal.',
       pleasantness: 'Simply rate how pleasant you find each picture.'
     },
 

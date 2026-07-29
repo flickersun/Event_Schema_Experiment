@@ -67,9 +67,17 @@ CONFIG = {
         # Wording is kept deliberately plain — many participants are undergraduates
         # and non-native English speakers, so avoid formal or idiomatic phrasing.
         "instruction_hint": {
+            # The clause about other people removes a real ambiguity a pilot
+            # participant hit: strangers appear in one scene (the elevator
+            # passenger, the neighbouring viewer) and are gone in the next, and
+            # people were unsure whether that counted as "not following".
+            # It deliberately mentions ONLY people. Do NOT generalise it to
+            # "ignore the details of the scene" — that would discourage encoding
+            # the objects, which are Block 2's dependent variable.
             "consistency": ("Decide whether each picture makes sense as the NEXT STEP "
                             "after the one before it — not whether the two pictures "
-                            "look alike."),
+                            "look alike. Other people may appear or leave between "
+                            "pictures; that is normal."),
             "pleasantness": "Simply rate how pleasant you find each picture.",
         },
 
