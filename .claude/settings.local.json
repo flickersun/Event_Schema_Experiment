@@ -32,7 +32,8 @@
       "Bash(curl -s \"https://flickersun.github.io/Event_Schema_Experiment/js/config.js?v=$\\(date +%s%N\\)\" -H \"Cache-Control: no-cache\")",
       "Bash(curl -s \"https://flickersun.github.io/Event_Schema_Experiment/js/config.js?v=$\\(date +%s%N\\)\")",
       "Bash(curl -s \"https://flickersun.github.io/Event_Schema_Experiment/index.html?v=$\\(date +%s%N\\)\" -H \"Cache-Control: no-cache\")",
-      "Bash(curl -s \"https://flickersun.github.io/Event_Schema_Experiment/test_block1_schema.csv?v=$\\(date +%s%N\\)\" -H \"Cache-Control: no-cache\")"
+      "Bash(curl -s \"https://flickersun.github.io/Event_Schema_Experiment/test_block1_schema.csv?v=$\\(date +%s%N\\)\" -H \"Cache-Control: no-cache\")",
+      "Bash(curl -s \"https://flickersun.github.io/Event_Schema_Experiment/js/timeline.js?v=$\\(date +%s%N\\)\" -H \"Cache-Control: no-cache\")"
     ]
   }
 }

@@ -11,15 +11,50 @@
  *   → Block 3 (order test, click-to-order)          — LAST, its scenes reveal variants
  */
 
-// --- small helpers ---------------------------------------------------------
-const scaleRow = (low, high, n) => `
-  <div class="scale">
-    ${Array.from({ length: n }, (_, i) => `<span class="num">${i + 1}</span>`).join("")}
-  </div>
-  <div class="anchors"><span>1 = ${low}</span><span>${n} = ${high}</span></div>
-  <div class="hint">press a number key</div>`;
+// --- rating trials ---------------------------------------------------------
+// Ratings are collected with CLICKABLE BUTTONS, with number keys as a shortcut.
+// Keyboard-only proved unreliable in the field: participants running a CJK IME can
+// emit full-width digits ("１"), and non-US layouts (e.g. AZERTY) need Shift for the
+// top row — in both cases event.key never equals "1" and the keypress silently does
+// nothing. Buttons work regardless of keyboard or input method; the key handler below
+// additionally normalises full-width digits back to ASCII.
+let _kbHandler = null;
 
-const CHOICES = (n) => Array.from({ length: n }, (_, i) => String(i + 1));
+function bindDigitKeys(n) {
+  _kbHandler = (e) => {
+    const k = e.key.replace(/[０-９]/g,
+                           (c) => String.fromCharCode(c.charCodeAt(0) - 0xFEE0));
+    const v = parseInt(k, 10);
+    if (Number.isInteger(v) && v >= 1 && v <= n) {
+      const btns = document.querySelectorAll(".jspsych-btn");
+      if (btns[v - 1]) btns[v - 1].click();
+    }
+  };
+  document.addEventListener("keydown", _kbHandler);
+}
+
+function unbindDigitKeys() {
+  if (_kbHandler) { document.removeEventListener("keydown", _kbHandler); _kbHandler = null; }
+}
+
+function ratingTrial({ stimulus, low, high, n, data, onFinish }) {
+  return {
+    type: jsPsychHtmlButtonResponse,
+    stimulus,
+    choices: Array.from({ length: n }, (_, i) => String(i + 1)),
+    button_html: '<button class="jspsych-btn rate-btn">%choice%</button>',
+    prompt: `<div class="anchors"><span>1 = ${low}</span><span>${n} = ${high}</span></div>
+             <div class="hint">click a number, or press a number key</div>`,
+    data,
+    on_load: () => bindDigitKeys(n),
+    on_finish: (d) => {
+      unbindDigitKeys();
+      // store the 1..n rating itself, never the 0-based button index
+      d.response = d.response + 1;
+      if (onFinish) onFinish(d);
+    },
+  };
+}
 
 function instructionScreen(html) {
   return {
@@ -82,18 +117,16 @@ function buildEncoding(state, stimuli) {
     });
 
     if (doRate) {
-      tl.push({
-        type: jsPsychHtmlKeyboardResponse,
-        stimulus: `<div class="rate"><p class="q">${cr.prompts[cover]}</p>
-                   ${scaleRow(cr.anchors[cover].low, cr.anchors[cover].high, cr.max)}</div>`,
-        choices: CHOICES(cr.max),
+      tl.push(ratingTrial({
+        stimulus: `<div class="rate"><p class="q">${cr.prompts[cover]}</p></div>`,
+        low: cr.anchors[cover].low, high: cr.anchors[cover].high, n: cr.max,
         data: {
           phase: "encoding_rating", condition: state.routines[rid].condition,
           routine_id: rid, step_num: scene.step_num, global_scene_pos: gi,
           is_boundary_transition: isBoundary ? 1 : 0,
         },
-        on_finish: (d) => { d.cover_rating = Number(d.response); d.cover_rt_ms = Math.round(d.rt); },
-      });
+        onFinish: (d) => { d.cover_rating = d.response; d.cover_rt_ms = Math.round(d.rt); },
+      }));
     }
     tl.push({ type: jsPsychHtmlKeyboardResponse, stimulus: "", choices: "NO_KEYS",
               trial_duration: CONFIG.interSceneBlankMs });
@@ -117,12 +150,10 @@ function buildBlock1(state, stimuli) {
     <p>There are no pictures in this part.</p>`)];
 
   orderedBlock1Trials(state, stimuli).forEach((t) => {
-    tl.push({
-      type: jsPsychHtmlKeyboardResponse,
+    tl.push(ratingTrial({
       stimulus: `<div class="rate"><p class="cue">${t.context_cue}</p>
-                 <p class="q">${t.question_text}</p>
-                 ${scaleRow("definitely NO", "definitely YES", n)}</div>`,
-      choices: CHOICES(n),
+                 <p class="q">${t.question_text}</p></div>`,
+      low: "definitely NO", high: "definitely YES", n,
       data: {
         phase: "block1", block: 1, condition: t.condition,
         routine_id: t.routine_id, step_num: t.step_num,
@@ -131,8 +162,8 @@ function buildBlock1(state, stimuli) {
         is_omitted_lure: t.is_omitted_lure ? 1 : 0,
         correct_answer: t.correct_answer,
       },
-      on_finish: (d) => { d.rt_ms = Math.round(d.rt); },
-    });
+      onFinish: (d) => { d.rt_ms = Math.round(d.rt); },
+    }));
     tl.push({ type: jsPsychHtmlKeyboardResponse, stimulus: "", choices: "NO_KEYS",
               trial_duration: 250 });
   });
@@ -152,14 +183,12 @@ function buildBlock2(state, stimuli) {
     <p class="quote">1 = definitely NOT the one &nbsp;…&nbsp; ${n} = definitely the one</p>`)];
 
   orderedBlock2Trials(state, stimuli).forEach((t) => {
-    tl.push({
-      type: jsPsychHtmlKeyboardResponse,
+    tl.push(ratingTrial({
       stimulus: `<div class="rate">
                    <img class="probe" src="${t.image_file}">
                    <p class="cue">${t.context_cue}</p>
-                   <p class="q">${t.question_text}</p>
-                   ${scaleRow("definitely NOT the one", "definitely the one", n)}</div>`,
-      choices: CHOICES(n),
+                   <p class="q">${t.question_text}</p></div>`,
+      low: "definitely NOT the one", high: "definitely the one", n,
       data: {
         phase: "block2", block: 2, condition: t.condition,
         routine_id: t.routine_id, step_num: t.step_num, is_object_step: 1,
@@ -168,8 +197,8 @@ function buildBlock2(state, stimuli) {
         encoded_target_variant: t.encoded_target_variant,
         correct_answer: t.correct_answer,
       },
-      on_finish: (d) => { d.rt_ms = Math.round(d.rt); },
-    });
+      onFinish: (d) => { d.rt_ms = Math.round(d.rt); },
+    }));
     tl.push({ type: jsPsychHtmlKeyboardResponse, stimulus: "", choices: "NO_KEYS",
               trial_duration: 250 });
   });
