@@ -59,6 +59,30 @@ video answer it from common sense?* If yes, it is at the right level (it probes 
 completion — what we want). If it requires recalling a picture detail, it is too
 specific — pull it back.
 
+**The distinction that resolves "too vague vs too specific".** These are not two ends of
+one dial — two *kinds* of detail behave differently:
+
+| Kind | Examples | Verdict |
+|---|---|---|
+| **Script-level** — where in the script it happens, who else is involved, the canonical prop | "paid the bill **at the table**", "a doctor listened to their chest **with a stethoscope**", "entered the station **from the street**" | **Keep.** Part of what a schema specifies; answerable from common sense; makes the step identifiable |
+| **Perceptual / episodic** — colour, quantity, exact appearance, which variant | "drinking orange juice from a **tall glass**", "the **red** suitcase" | **Remove.** Turns a schema judgment into an episodic-detail test |
+
+A pass that strips detail indiscriminately over-corrects: after one such pass the
+questions became genuinely hard to map onto the right sub-event (self-test feedback),
+because script-level identifiers had been removed along with perceptual ones. Four were
+restored on that basis: `restaurant` 4 ("food was served" → "the waiter brought food to
+the table"), `clinic` 5 ("a doctor examined them" → "listened to their chest" — otherwise
+it collides with the nurse's blood-pressure step), `metro` 1 ("entered the station" →
+"…from the street" — otherwise it collides with the escalator step), `hotel` 6 ("was in
+the room" → "was inside the hotel room").
+
+**A residual difficulty is structural, not fixable by wording.** Encoding is pictorial and
+Block 1 is textual, so the participant must map picture → text, and that mapping is
+inherently fuzzy. The spec chose text deliberately: only text lets the *omitted* step —
+whose scene was never displayed — be probed the same way as the shown steps. This is part
+of why Block 1 is the weakest measure (see `EXPERIMENT_MODEL_MAPPING.md` §8.2) and why the
+Block 3 order test was added, which needs no picture→text mapping.
+
 **Final calibration: script-level gist.** After two audits the questions were rewritten to
 name the step the way the script itself would ("looked at the menu", "ordered from the
 waiter", "paid the bill"), stripping perceptual and locative detail ("at the table" ×4,

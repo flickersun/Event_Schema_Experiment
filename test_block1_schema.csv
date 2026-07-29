@@ -2,7 +2,7 @@ block,routine_id,routine_label,step_num,is_object_step,default_omitted_step,cont
 schema,restaurant,restaurant,1,0,0,In the restaurant experience...,was there a step where the person sat down at a table?,confidence_1to6,1 = definitely NO ... 6 = definitely YES
 schema,restaurant,restaurant,2,1,0,In the restaurant experience...,was there a step where the person looked at the menu?,confidence_1to6,1 = definitely NO ... 6 = definitely YES
 schema,restaurant,restaurant,3,0,1,In the restaurant experience...,was there a step where the person ordered from the waiter?,confidence_1to6,1 = definitely NO ... 6 = definitely YES
-schema,restaurant,restaurant,4,1,0,In the restaurant experience...,was there a step where food was served?,confidence_1to6,1 = definitely NO ... 6 = definitely YES
+schema,restaurant,restaurant,4,1,0,In the restaurant experience...,was there a step where the waiter brought food to the table?,confidence_1to6,1 = definitely NO ... 6 = definitely YES
 schema,restaurant,restaurant,5,1,0,In the restaurant experience...,was there a step where the person had a drink?,confidence_1to6,1 = definitely NO ... 6 = definitely YES
 schema,restaurant,restaurant,6,0,0,In the restaurant experience...,was there a step where the person paid the bill?,confidence_1to6,1 = definitely NO ... 6 = definitely YES
 schema,movie,movie theatre,1,0,0,In the movie theatre experience...,was there a step where the person arrived at the cinema?,confidence_1to6,1 = definitely NO ... 6 = definitely YES
@@ -15,7 +15,7 @@ schema,clinic,doctor's visit,1,0,1,In the doctor's visit experience...,was there
 schema,clinic,doctor's visit,2,0,0,In the doctor's visit experience...,was there a step where the person filled in a form at the front desk?,confidence_1to6,1 = definitely NO ... 6 = definitely YES
 schema,clinic,doctor's visit,3,1,0,In the doctor's visit experience...,was there a step where the person sat in the waiting room?,confidence_1to6,1 = definitely NO ... 6 = definitely YES
 schema,clinic,doctor's visit,4,0,0,In the doctor's visit experience...,was there a step where a nurse checked their blood pressure?,confidence_1to6,1 = definitely NO ... 6 = definitely YES
-schema,clinic,doctor's visit,5,1,0,In the doctor's visit experience...,was there a step where a doctor examined them?,confidence_1to6,1 = definitely NO ... 6 = definitely YES
+schema,clinic,doctor's visit,5,1,0,In the doctor's visit experience...,was there a step where a doctor listened to their chest?,confidence_1to6,1 = definitely NO ... 6 = definitely YES
 schema,clinic,doctor's visit,6,1,0,In the doctor's visit experience...,was there a step where the person picked up medicine at the pharmacy?,confidence_1to6,1 = definitely NO ... 6 = definitely YES
 schema,airport,airport departure,1,1,0,In the airport departure experience...,was there a step where the person was at the check-in counter?,confidence_1to6,1 = definitely NO ... 6 = definitely YES
 schema,airport,airport departure,2,0,0,In the airport departure experience...,was there a step where the person went through security?,confidence_1to6,1 = definitely NO ... 6 = definitely YES
@@ -23,7 +23,7 @@ schema,airport,airport departure,3,1,0,In the airport departure experience...,wa
 schema,airport,airport departure,4,0,1,In the airport departure experience...,was there a step where the person's boarding pass was scanned?,confidence_1to6,1 = definitely NO ... 6 = definitely YES
 schema,airport,airport departure,5,0,0,In the airport departure experience...,was there a step where the person boarded the plane?,confidence_1to6,1 = definitely NO ... 6 = definitely YES
 schema,airport,airport departure,6,1,0,In the airport departure experience...,was there a step where the person buckled their seatbelt?,confidence_1to6,1 = definitely NO ... 6 = definitely YES
-schema,metro,metro commute,1,1,0,In the metro commute experience...,was there a step where the person entered the station?,confidence_1to6,1 = definitely NO ... 6 = definitely YES
+schema,metro,metro commute,1,1,0,In the metro commute experience...,was there a step where the person entered the station from the street?,confidence_1to6,1 = definitely NO ... 6 = definitely YES
 schema,metro,metro commute,2,0,0,In the metro commute experience...,was there a step where the person bought a ticket at the machine?,confidence_1to6,1 = definitely NO ... 6 = definitely YES
 schema,metro,metro commute,3,0,1,In the metro commute experience...,was there a step where the person took the escalator down?,confidence_1to6,1 = definitely NO ... 6 = definitely YES
 schema,metro,metro commute,4,1,0,In the metro commute experience...,was there a step where the person waited on the platform?,confidence_1to6,1 = definitely NO ... 6 = definitely YES
@@ -34,7 +34,7 @@ schema,hotel,hotel check-in,2,0,0,In the hotel check-in experience...,was there 
 schema,hotel,hotel check-in,3,1,0,In the hotel check-in experience...,was there a step where the person took the elevator up?,confidence_1to6,1 = definitely NO ... 6 = definitely YES
 schema,hotel,hotel check-in,4,0,1,In the hotel check-in experience...,was there a step where the person walked down the corridor?,confidence_1to6,1 = definitely NO ... 6 = definitely YES
 schema,hotel,hotel check-in,5,0,0,In the hotel check-in experience...,was there a step where the person unlocked the room door?,confidence_1to6,1 = definitely NO ... 6 = definitely YES
-schema,hotel,hotel check-in,6,1,0,In the hotel check-in experience...,was there a step where the person was in the room?,confidence_1to6,1 = definitely NO ... 6 = definitely YES
+schema,hotel,hotel check-in,6,1,0,In the hotel check-in experience...,was there a step where the person was inside the hotel room?,confidence_1to6,1 = definitely NO ... 6 = definitely YES
 schema,laundromat,laundromat trip,1,0,0,In the laundromat trip experience...,was there a step where the person arrived with their laundry?,confidence_1to6,1 = definitely NO ... 6 = definitely YES
 schema,laundromat,laundromat trip,2,1,0,In the laundromat trip experience...,was there a step where the person loaded the washing machine?,confidence_1to6,1 = definitely NO ... 6 = definitely YES
 schema,laundromat,laundromat trip,3,1,0,In the laundromat trip experience...,was there a step where the person added detergent?,confidence_1to6,1 = definitely NO ... 6 = definitely YES

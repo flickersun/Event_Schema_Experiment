@@ -28,7 +28,11 @@
       "Bash(git push *)",
       "Bash(curl -s https://flickersun.github.io/Event_Schema_Experiment/index.html)",
       "Bash(curl -s -X POST https://pipe.jspsych.org/api/data/ -H \"Content-Type: application/json\" -H \"Accept: */*\" -d '{\"experimentID\":\"j6BA3yHMjJzb\",\"filename\":\"PIPELINE-TEST_delete-me.csv\",\"data\":\"trial_type,phase,note\\\\nclick-order,order,pipeline test - safe to delete\\\\n\"}' -w \"\\\\nHTTP %{http_code}\\\\n\")",
-      "Bash(curl -s https://flickersun.github.io/Event_Schema_Experiment/js/config.js)"
+      "Bash(curl -s https://flickersun.github.io/Event_Schema_Experiment/js/config.js)",
+      "Bash(curl -s \"https://flickersun.github.io/Event_Schema_Experiment/js/config.js?v=$\\(date +%s%N\\)\" -H \"Cache-Control: no-cache\")",
+      "Bash(curl -s \"https://flickersun.github.io/Event_Schema_Experiment/js/config.js?v=$\\(date +%s%N\\)\")",
+      "Bash(curl -s \"https://flickersun.github.io/Event_Schema_Experiment/index.html?v=$\\(date +%s%N\\)\" -H \"Cache-Control: no-cache\")",
+      "Bash(curl -s \"https://flickersun.github.io/Event_Schema_Experiment/test_block1_schema.csv?v=$\\(date +%s%N\\)\" -H \"Cache-Control: no-cache\")"
     ]
   }
 }
