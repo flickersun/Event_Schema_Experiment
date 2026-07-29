@@ -426,8 +426,8 @@ def run_block2():
 def run_order_test():
     show_message(
         "One last part.\n\n"
-        "For each experience you will see its pictures all at once, in a shuffled "
-        "arrangement.\n"
+        "For each experience you will see its pictures all at once, in a mixed-up "
+        "order.\n"
         "Click them in the order they actually happened — first click the one that came "
         "first, and so on.\n\n"
         "Backspace undoes your last click.\n\nPress SPACE to begin.")

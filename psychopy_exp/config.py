@@ -64,10 +64,12 @@ CONFIG = {
         # the protagonist, and (within a routine) the setting, so perceived visual
         # similarity is high regardless of order. If subjects rate on that
         # dimension the two groups look identical.
+        # Wording is kept deliberately plain — many participants are undergraduates
+        # and non-native English speakers, so avoid formal or idiomatic phrasing.
         "instruction_hint": {
-            "consistency": ("Judge whether each picture makes sense as the NEXT STEP "
+            "consistency": ("Decide whether each picture makes sense as the NEXT STEP "
                             "after the one before it — not whether the two pictures "
-                            "look similar."),
+                            "look alike."),
             "pleasantness": "Simply rate how pleasant you find each picture.",
         },
 
@@ -79,9 +81,9 @@ CONFIG = {
         "focus_note": (
             "Please give this your full attention: close other tabs and silence "
             "your phone.\n\n"
-            "Rating accurately means actually looking at what happens in each "
-            "picture, so take in the whole scene while it is on screen. Each "
-            "picture stays up for a few seconds and moves on by itself."
+            "To rate well you have to see what happens in each picture, so look "
+            "at the whole picture while it is on screen. Each picture stays up "
+            "for a few seconds and then moves on by itself."
         ),
     },
 

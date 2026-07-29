@@ -57,9 +57,11 @@ const CONFIG = {
     // protagonist, and (within a routine) the setting, so perceived visual
     // similarity is high regardless of order. If subjects rate on that dimension
     // the two groups look identical.
+    // Wording is kept deliberately plain — many participants are undergraduates and
+    // non-native English speakers, so avoid formal or idiomatic phrasing.
     instructionHint: {
-      consistency: 'Judge whether each picture makes sense as the NEXT STEP after ' +
-                   'the one before it — not whether the two pictures look similar.',
+      consistency: 'Decide whether each picture makes sense as the NEXT STEP after ' +
+                   'the one before it — not whether the two pictures look alike.',
       pleasantness: 'Simply rate how pleasant you find each picture.'
     },
 
@@ -68,9 +70,9 @@ const CONFIG = {
     // It works by making the cover task's demands explicit, not by asking anyone
     // to remember anything.
     focusNote: 'Please give this your full attention: close other tabs and silence ' +
-               'your phone. Rating accurately means actually looking at what happens ' +
-               'in each picture, so take in the whole scene while it is on screen. ' +
-               'Each picture stays up for a few seconds and moves on by itself.'
+               'your phone. To rate well you have to see what happens in each picture, ' +
+               'so look at the whole picture while it is on screen. Each picture stays ' +
+               'up for a few seconds and then moves on by itself.'
   },
 
   // --- Scene presentation at encoding -------------------------------------

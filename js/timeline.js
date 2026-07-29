@@ -184,8 +184,8 @@ function buildBlock2(state, stimuli) {
 function buildBlock3(state, stimuli) {
   const tl = [instructionScreen(`
     <h2>Last part</h2>
-    <p>For each experience you will see its pictures all at once, in a shuffled
-       arrangement.</p>
+    <p>For each experience you will see its pictures all at once, in a mixed-up
+       order.</p>
     <p>Click them in the order they actually happened — first click the one that
        came first, and so on.</p>
     <p>Backspace undoes your last click.</p>`)];
