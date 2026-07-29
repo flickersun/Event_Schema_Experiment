@@ -84,7 +84,19 @@ const COMPLETION_URL = params.get("next") || "";
 // participant from getting stuck when DataPipe is unreachable, but it is NOT
 // counterbalanced. Without the flag that failure is silent — data still saves, the
 // balancing is quietly broken, and nothing in the file reveals it.
+//
+// NOTE on "why not count only completers": subjIndex determines what the participant
+// sees, so it must be drawn before the session starts; DataPipe cannot un-issue a number
+// when someone drops out. This costs little here because the design is
+// within-subject — every participant gets the same 4 ordered / 4 scrambled mix, so
+// nothing about the assignment can make one person likelier to quit than another.
+// Dropouts are therefore missing-at-random with respect to subjIndex: noise, not bias.
+// Use ?subj=N after data collection to top up any cells that came out short.
 async function getSubjIndex() {
+  const forced = params.get("subj");
+  if (forced !== null && forced !== "" && Number.isInteger(Number(forced))) {
+    return { index: Number(forced), source: "url_override" };
+  }
   try {
     const r = await fetch("https://pipe.jspsych.org/api/condition/", {
       method: "POST", headers: { "Content-Type": "application/json" },
