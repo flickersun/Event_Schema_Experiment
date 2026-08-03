@@ -1,0 +1,91 @@
+[[AdvancedFormat]]
+
+[[Block:Familiarity]]
+
+[[Question:DB]]
+<h3>Almost done</h3>
+<p>Just a few short questions about the kinds of experiences you saw.</p>
+
+[[Question:Matrix:Likert:SingleAnswer]]
+[[ID:familiarity]]
+How familiar is each of these kinds of experiences to you in your own life?
+[[Choices]]
+Eating at a restaurant
+Going to the cinema
+Visiting a doctor's clinic
+Departing from an airport
+Taking the metro / subway
+Checking into a hotel
+Doing laundry at a laundromat
+Working out at a gym
+[[Answers]]
+1 - not at all familiar
+2
+3
+4
+5
+6
+7 - very familiar
+
+[[Block:Order plausibility]]
+
+[[Question:Matrix:Likert:SingleAnswer]]
+[[ID:order_predictability]]
+In each of these kinds of experiences, how predictable is the order in which the steps usually happen?
+[[Choices]]
+Eating at a restaurant
+Going to the cinema
+Visiting a doctor's clinic
+Departing from an airport
+Taking the metro / subway
+Checking into a hotel
+Doing laundry at a laundromat
+Working out at a gym
+[[Answers]]
+1 - not at all predictable
+2
+3
+4
+5
+6
+7 - completely predictable
+
+[[Block:Strategy]]
+
+[[Question:TE:Essay]]
+[[ID:strategy]]
+While you were watching the pictures, did you do anything in particular to keep track of them? If so, what? (There is no right answer — please just describe what you actually did, if anything.)
+
+[[Question:MC:SingleAnswer]]
+[[ID:guessed_purpose]]
+At any point while watching the pictures, did you expect that you would later be asked questions about what you had seen?
+[[Choices]]
+No, it was a surprise
+I wondered about it, but wasn't sure
+Yes, I expected it
+
+[[Block:Debrief]]
+
+[[Question:DB]]
+[[ID:debrief]]
+<h3>What this study was about</h3>
+<p><i>REPLACE OR ADAPT to match the debriefing text approved in your IRB protocol. The content below covers what normally has to be disclosed.</i></p>
+<p>Thank you for taking part.</p>
+<p>This study is about <b>memory</b> for everyday experiences, and in particular about how our general knowledge of familiar routines &mdash; what usually happens at a restaurant, an airport, a gym &mdash; shapes what we remember about a specific occasion.</p>
+<p>We did not tell you in advance that your memory would be tested. This was necessary: if you had known, you would have deliberately tried to memorise the pictures, and we specifically wanted to study what people remember when they are <b>not</b> trying to. That is why the earlier description referred only to judging sequences of everyday activities.</p>
+<p>You may also have noticed that in some of the experiences the pictures seemed out of order. That was deliberate. Half of the experiences were shown in their natural order and half were shuffled, so that we could compare what people remember when the familiar order is available to them and when it is not.</p>
+<p>Nothing you did was right or wrong, and we are not evaluating you as an individual &mdash; we only analyse patterns averaged over many participants.</p>
+<p>Because other students will take part later, please <b>do not describe the study to anyone else</b>, in particular the fact that memory is tested. Knowing this in advance would change how they behave and we would not be able to use their data.</p>
+<p>If you have questions about the study, contact [PI / student researcher name and email]. For questions about your rights as a participant, contact [IRB office and contact details].</p>
+
+[[Question:MC:SingleAnswer]]
+[[ID:data_ok]]
+Now that you know the full purpose of the study, are you still willing for your responses to be used?
+[[Choices]]
+Yes, you may use my data
+No, please discard my data
+
+[[Question:DB]]
+[[ID:final]]
+<h3>Thank you</h3>
+<p>Press the arrow below to return to SONA. Your credit will be granted automatically &mdash; please wait for the page to finish loading.</p>

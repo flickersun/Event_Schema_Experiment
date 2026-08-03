@@ -1,0 +1,77 @@
+[[AdvancedFormat]]
+
+[[Block:Device check]]
+
+[[Question:DB]]
+<h3>Before you begin</h3>
+<p>This study must be completed on a <b>laptop or desktop computer</b>. It will not work correctly on a phone or tablet.</p>
+<p>Please also make sure you can finish in one sitting — it takes about <b>25 minutes</b> in total and cannot be paused.</p>
+
+[[Question:MC:SingleAnswer]]
+[[ID:device_ok]]
+Are you on a laptop or desktop computer, and able to finish in one sitting?
+[[Choices]]
+Yes
+No
+
+[[Block:Consent]]
+
+[[Question:DB]]
+[[ID:consent_text]]
+<h3>Consent to participate in research</h3>
+<p><i>REPLACE THIS ENTIRE BLOCK WITH YOUR IRB-APPROVED CONSENT LANGUAGE. The notes below are only a checklist of what typically has to appear, and of one wording constraint specific to this study.</i></p>
+<ul>
+<li>Study title and purpose &mdash; describe it as a study of <b>how people perceive sequences of everyday activities</b>. See the warning below.</li>
+<li>Principal investigator, faculty advisor, department, contact details</li>
+<li>IRB protocol number and IRB contact information</li>
+<li>What participants will do: watch a series of pictures and make simple judgements, then answer some questions. About 25 minutes.</li>
+<li>Compensation: course credit through SONA</li>
+<li>Risks (minimal) and benefits</li>
+<li>Confidentiality: responses are identified only by a random code; data are stored on the Open Science Framework in a private project</li>
+<li>Voluntary participation, right to withdraw at any time without penalty</li>
+<li>Statement that participants will receive a fuller explanation of the study's purpose at the end (incomplete disclosure + debriefing)</li>
+</ul>
+<p><b>WORDING CONSTRAINT &mdash; do not skip this.</b> The consent form must <b>not</b> use the words <i>memory</i>, <i>remember</i>, or <i>recall</i>. Encoding in this study is incidental and the memory test is a surprise; telling participants beforehand that memory is involved changes what is being measured and invalidates the design. Every other participant-facing screen has been kept neutral for the same reason. Use "how people perceive sequences of everyday activities" or equivalent, and declare the incomplete disclosure and the debriefing in your IRB protocol.</p>
+
+[[Question:MC:SingleAnswer]]
+[[ID:consent]]
+I have read the information above and I agree to take part in this study.
+[[Choices]]
+Yes, I agree to take part
+No, I do not wish to take part
+
+[[Block:Demographics]]
+
+[[Question:TE:SingleLine]]
+[[ID:age]]
+How old are you (in years)?
+
+[[Question:MC:SingleAnswer]]
+[[ID:gender]]
+What is your gender?
+[[Choices]]
+Woman
+Man
+Non-binary
+Prefer to self-describe
+Prefer not to say
+
+[[Question:MC:SingleAnswer]]
+[[ID:native_english]]
+Is English your first language?
+[[Choices]]
+Yes
+No
+
+[[Question:TE:SingleLine]]
+[[ID:first_language]]
+If English is not your first language, what is your first language?
+
+[[Block:Handoff]]
+
+[[Question:DB]]
+[[ID:handoff]]
+<h3>Next</h3>
+<p>When you press the arrow below you will be taken to the main part of the study, which opens in this same window.</p>
+<p><b>Please do not close, refresh, or navigate away from the window until it finishes.</b> Your responses are only saved at the very end, so leaving early means your data cannot be used and credit cannot be granted.</p>
+<p>It takes about 18 minutes. Please have your sound off and other tabs closed.</p>
