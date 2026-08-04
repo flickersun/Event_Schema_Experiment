@@ -239,15 +239,7 @@ function buildBlock3(state, stimuli) {
 }
 
 // ---------------------------------------------------------------------------
-// opts.checkpoint(label) — optional trial factory that saves the data collected so
-// far. Checkpoints sit after encoding and after Block 2, so that a drop-out or a
-// failed final save still leaves the bulk of the session recoverable. Without them
-// the whole session is lost if the single save at the end does not go through,
-// which is exactly what happened to one participant in the field.
-function buildTimeline(state, stimuli, opts) {
-  opts = opts || {};
-  const cp = (label) => (opts.checkpoint ? [opts.checkpoint(label)] : []);
-
+function buildTimeline(state, stimuli) {
   const imgs = new Set();
   state.instance_order.forEach((rid) =>
     state.routines[rid].shown_order.forEach((s) => imgs.add(s.image_file)));
@@ -256,10 +248,8 @@ function buildTimeline(state, stimuli, opts) {
   return [
     { type: jsPsychPreload, images: Array.from(imgs), message: "Loading…", show_progress_bar: true },
     ...buildEncoding(state, stimuli),
-    ...cp("p1_encoding"),
     ...buildBlock1(state, stimuli),
     ...buildBlock2(state, stimuli),
-    ...cp("p2_blocks12"),
     ...(CONFIG.orderTest.enabled ? buildBlock3(state, stimuli) : []),
   ];
 }
