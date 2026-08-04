@@ -137,21 +137,61 @@ async function getSubjIndex() {
     design: state.design, cover_task: state.coverTask,
   });
 
-  const timeline = buildTimeline(state, stimuli);
+  // --- saving ---------------------------------------------------------------
+  // An earlier version fired one fetch and used .finally(), so a rejected or
+  // dropped request was indistinguishable from a successful one: the participant
+  // still saw "thank you", still got credit, and the data simply never arrived.
+  // That happened in the field. Now: check the response, retry, and save at
+  // CHECKPOINTS so a failure or a drop-out late in the session still leaves
+  // usable data. In analysis, take the largest/latest file per participant.
+  const saveLog = [];
 
+  async function saveToPipe(label) {
+    const body = JSON.stringify({
+      experimentID: DATAPIPE_ID,
+      filename: `sub-${subjIndex}_${participantId}_${label}_${Date.now()}.csv`,
+      data: jsPsych.data.get().csv(),
+    });
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      try {
+        const r = await fetch("https://pipe.jspsych.org/api/data/", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Accept: "*/*" },
+          body,
+        });
+        const j = await r.json().catch(() => ({}));
+        if (r.ok && !j.error) { saveLog.push(`${label}:ok${attempt}`); return true; }
+        console.warn(`DataPipe rejected "${label}" (attempt ${attempt})`, r.status, j);
+      } catch (e) {
+        console.warn(`DataPipe unreachable for "${label}" (attempt ${attempt})`, e);
+      }
+      await new Promise((res) => setTimeout(res, 800 * attempt));
+    }
+    saveLog.push(`${label}:FAILED`);
+    return false;
+  }
+
+  // Mid-session checkpoint: fire it off, show nothing, and move on quickly so the
+  // participant is not interrupted. Best effort by design.
+  const checkpoint = (label) => ({
+    type: jsPsychHtmlKeyboardResponse,
+    stimulus: "", choices: "NO_KEYS", trial_duration: 400,
+    on_load: () => { saveToPipe(label); },
+  });
+
+  const timeline = buildTimeline(state, stimuli, { checkpoint });
+
+  // Final save: blocking, and it waits for the result.
   timeline.push({
     type: jsPsychHtmlKeyboardResponse,
     stimulus: `<div class="instr"><h2>Saving…</h2><p>Please do not close this window.</p></div>`,
     choices: "NO_KEYS",
-    on_start: () => {
-      fetch("https://pipe.jspsych.org/api/data/", {
-        method: "POST", headers: { "Content-Type": "application/json", Accept: "*/*" },
-        body: JSON.stringify({
-          experimentID: DATAPIPE_ID,
-          filename: `sub-${subjIndex}_${participantId}_${Date.now()}.csv`,
-          data: jsPsych.data.get().csv(),
-        }),
-      }).finally(() => jsPsych.finishTrial());
+    on_load: () => {
+      jsPsych.data.addProperties({ save_log: saveLog.join("|") });
+      saveToPipe("final").then((ok) => {
+        if (!ok) console.error("FINAL SAVE FAILED after 3 attempts");
+        jsPsych.finishTrial();
+      });
     },
   });
   timeline.push({
