@@ -245,6 +245,49 @@ Which set a build uses is config-driven: `paths.images` + `paths.image_ext`
 Image paths are not part of the cross-build parity check, so the two builds can legitimately
 use different assets while their randomization stays identical.
 
+## 6.2 Analysis decisions, fixed during the pilot
+
+`analysis/pilot_analysis.py` is the standing analysis. Three decisions were taken at
+n = 13 and are recorded here because they were made **while the relevant results were
+already visible**, which is exactly when they need to be written down rather than
+settled afterwards by whichever choice reads better.
+
+**Primary measure: d′ at the ≥ 4 cutoff.** AUC over the full 6-point scale is reported
+alongside as a robustness check, together with the criterion sweep. The two disagree at
+this n — Block 1 condition effect d′ −0.47 (p .036) vs AUC −0.061 (p .131); Block 2
+d′ +0.37 (p .109) vs AUC +0.029 (p .522) — so the choice is consequential and is fixed
+now. d′ is primary because it is standard in this literature and because the criterion
+sweep shows the contrast keeps its sign at every cutoff from ≥2 to ≥6, so it is not an
+artefact of one criterion. AUC is kept because it uses the whole scale, does not depend
+on the criterion, and is the more conservative of the two. **If the confirmatory sample
+splits them again, report both; do not switch the primary after the fact.**
+
+**Exclusions are behavioural and per-block**, never on d′ itself (that would be selecting
+on the dependent variable). A participant can disengage from one block and do the rest
+properly, so:
+
+| rule | scope |
+|---|---|
+| both blocks' median RT < 800 ms **and** rating SD < 1.0 | whole subject |
+| Block 1 median RT < 800 ms (48 text questions; 800 ms does not read one) | Block 1 only |
+| Block 2 median RT < 800 ms | Block 2 only |
+
+**Do not trim items by observed difficulty.** Item difficulty is only ~12% reliable at
+this n (split-half r ≈ .07), so trimming the ends removes mostly sampling noise while
+also shrinking each participant's trial count; measured, every trimming threshold made
+the Block 2 contrast *smaller*. The two objects that look hardest (hotel suitcase,
+airport headphones) have among the most visually distinct variant pairs in the set,
+which is the expected signature of noise rather than difficulty.
+
+**Two structural limits worth knowing before interpreting anything.**
+- Block 1's lure is the omitted sub-event, which was never shown, so it carries no
+  encoding rating and no boundary status. Boundary and PE analyses on Block 1 therefore
+  compare targets against a *shared* lure set; d′ then degenerates to a hit-rate
+  difference (the false-alarm term cancels) and must not be used — use AUC there.
+- In the continuous-stream design, boundary items are **100% the first shown scene of
+  their routine**. Boundary effects and within-routine serial-position effects cannot be
+  separated in this design.
+
 ## 7. Keeping the two builds in sync
 `js/` now has full parity with `psychopy_exp/`: the bit-exact PRNG, group/omission/
 Block-2-role counterbalances, per-subject variant assignment, within-instance scramble,
